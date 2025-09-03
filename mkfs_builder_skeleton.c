@@ -92,6 +92,10 @@ typedef struct {
     // CREATE YOUR DIRECTORY ENTRY STRUCTURE HERE
     // IF CREATED CORRECTLY, THE STATIC_ASSERT ERROR SHOULD BE GONE
 
+    uint32_t inode_no;
+    uint8_t type;
+    char name[58];
+
     uint8_t  checksum; // XOR of bytes 0..62
 } dirent64_t;
 #pragma pack(pop)
@@ -187,6 +191,13 @@ int main() {
     inode.uid16_gid16 = 0;
     inode.xattr_ptr = 0;
     inode.inode_crc = inode_crc_finalize(&inode);
+
+    // directory entry initialization
+    dirent64_t dirent;
+    dirent.inode_no = 1;
+
+    // ADD LATER (type)
+    dirent.checksum = dirent_checksum_finalize(&dirent);
 
     return 0;
 }

@@ -162,8 +162,19 @@ int main() {
     // inode init
     time_t now = time(NULL);
     inode_t inode;
-    inode.mode = ;
+
+    // ADD LATER
+    if (type == 1) // file
+    {
+        inode.mode = 0100000;
+    }
+    else if (type == 0) //directory
+    {
+        inode.mode = 0040000;
+    }
+
     inode.links = ;
+
     inode.uid = 0;
     inode.gid = 0;
     inode.atime = now;

@@ -57,6 +57,28 @@ typedef struct {
     // CREATE YOUR INODE HERE
     // IF CREATED CORRECTLY, THE STATIC_ASSERT ERROR SHOULD BE GONE
 
+    uint16_t mode;
+    uint16_t links;
+
+    uint32_t uid;
+    uint32_t gid;
+
+    uint64_t size_bytes;
+    uint64_t atime;
+    uint64_t mtime;
+    uint64_t ctime;
+
+    uint32_t direct[12];
+    uint32_t reserved_0;
+    uint32_t reserved_1;
+    uint32_t reserved_2;
+    uint32_t proj_id;
+    uint32_t uid16_gid16;
+
+    uint64_t xattr_ptr;
+    uint64_t inode_crc;
+
+
     // THIS FIELD SHOULD STAY AT THE END
     // ALL OTHER FIELDS SHOULD BE ABOVE THIS
     uint64_t inode_crc;   // low 4 bytes store crc32 of bytes [0..119]; high 4 bytes 0
@@ -128,16 +150,32 @@ int main() {
 
     // superblock init
     time_t now = time(NULL);
-    superblock_t superblock = {
-        .magic = 0x4D565346;
-        .version = 1;
-        .block_size = BS;
-        .root_inode = 1;
-        .mtime_epoch = now;
-        .flags = 0;
-        .checksum = superblock_crc_finalize(&superblock);
-    }
+    superblock_t superblock;
+    superblock.magic = 0x4D565346;
+    superblock.version = 1;
+    superblock.block_size = BS;
+    superblock.root_inode = 1;
+    superblock.mtime_epoch = now;
+    superblock.flags = 0;
+    superblock.checksum = superblock_crc_finalize(&superblock);
 
+    // inode init
+    time_t now = time(NULL);
+    inode_t inode;
+    inode.mode = ;
+    inode.links = ;
+    inode.uid = 0;
+    inode.gid = 0;
+    inode.atime = now;
+    inode.mtime = now;
+    inode.ctime = now;
+    inode.reserved_0 = 0;
+    inode.reserved_1 = 0;
+    inode.reserved_2 = 0;
+    inode.proj_id = 2;
+    inode.uid16_gid16 = 0;
+    inode.xattr_ptr = 0;
+    inode.inode_crc = inode_crc_finalize(&inode);
 
     return 0;
 }

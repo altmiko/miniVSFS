@@ -144,59 +144,105 @@ void dirent_checksum_finalize(dirent64_t* de) {
     de->checksum = x;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
     crc32_init();
     // WRITE YOUR DRIVER CODE HERE
     // PARSE YOUR CLI PARAMETERS
     // THEN CREATE YOUR FILE SYSTEM WITH A ROOT DIRECTORY
     // THEN SAVE THE DATA INSIDE THE OUTPUT IMAGE
 
-    // superblock init
-    time_t now = time(NULL);
-    superblock_t superblock;
-    superblock.magic = 0x4D565346;
-    superblock.version = 1;
-    superblock.block_size = BS;
-    superblock.root_inode = 1;
-    superblock.mtime_epoch = now;
-    superblock.flags = 0;
-    superblock.checksum = superblock_crc_finalize(&superblock);
+    // parse CLI parameters
+    if (argc > 7 || argc < 2) {
+        printf("Usage: --image <image_file> --size-kib <180-4096> --inodes <128-512>\n");
+        return 1;
+    }
 
-    // inode init
-    inode_t inode;
+    else {
+        printf("image %s\n", argv[2]);
+        printf("size %s\n", argv[4]);
+        printf("inodes %s\n", argv[6]);
 
-    // ADD LATER
-    // if (type == 1) // file
-    // {
-    //     inode.mode = 0100000;
-    // }
-    // else if (type == 0) //directory
-    // {
-    //     inode.mode = 0040000;
-    // }
+        char *image_file = argv[2];
+        int size_kib = atoi(argv[4]);
+        int inodes = atoi(argv[6]);
 
-    // inode.links = ;
+        if (size_kib > 4096 || size_kib < 180 && size_kib % 4 != 0) {
+            printf("Error: size must be between 180 and 4096 and size must be a multiple of 4\n");
+            return 1;
+        }
+        if (inodes > 512 || inodes < 128) {
+            printf("Error: inodes must be between 128 and 512\n");
+            return 1;
+        }
+        else {
 
-    inode.uid = 0;
-    inode.gid = 0;
-    inode.atime = now;
-    inode.mtime = now;
-    inode.ctime = now;
-    inode.reserved_0 = 0;
-    inode.reserved_1 = 0;
-    inode.reserved_2 = 0;
-    inode.proj_id = 2;
-    inode.uid16_gid16 = 0;
-    inode.xattr_ptr = 0;
-    inode_crc_finalize(&inode);
+            FILE *fp = fopen(image_file, "wb");
+            if (!fp) {
+                printf("Failed to open image file");
+                return 1;
+            }
+
+            // superblock init
+            time_t now = time(NULL);
+            superblock_t superblock;
+            superblock.magic = 0x4D565346;
+            superblock.version = 1;
+            superblock.block_size = BS;
+            superblock.total_blocks = size_kib * (1024/4096);
+            superblock.root_inode = 1;
+            superblock.mtime_epoch = now;
+            superblock.flags = 0;
+            superblock.checksum = superblock_crc_finalize(&superblock);
+
+            // write superblock to img
+            fwrite(&superblock, sizeof(superblock_t), 1, fp);
+
+            // inode init
+            inode_t inode;
+
+            // ADD LATER
+            // if (type == 1) // file
+            // {
+            //     inode.mode = 0100000;
+            // }
+            // else if (type == 0) //directory
+            // {
+            //     inode.mode = 0040000;
+            // }
+
+            // inode.links = ;
+
+            inode.uid = 0;
+            inode.gid = 0;
+            inode.atime = now;
+            inode.mtime = now;
+            inode.ctime = now;
+            inode.reserved_0 = 0;
+            inode.reserved_1 = 0;
+            inode.reserved_2 = 0;
+            inode.proj_id = 2;
+            inode.uid16_gid16 = 0;
+            inode.xattr_ptr = 0;
+            inode_crc_finalize(&inode);
+
+            // Write inode to img
+            fwrite(&inode, sizeof(inode_t), 1, fp);
 
 
-    // directory entry initialization
-    dirent64_t dirent;
-    dirent.inode_no = 1;
+            // directory entry initialization
+            dirent64_t dirent;
+            dirent.inode_no = 1;
 
-    // ADD LATER (type)
-    dirent_checksum_finalize(&dirent);
+            // ADD LATER (type)
+            dirent_checksum_finalize(&dirent);
+
+        }
+        
+    }
+
+
+
+    
 
     return 0;
 }

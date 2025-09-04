@@ -28,7 +28,7 @@ typedef struct {
 
     uint32_t magic;
     uint32_t version;
-    uint32_t block_size = BS;
+    uint32_t block_size;
 
     uint64_t total_blocks;
     uint64_t inode_count;
@@ -76,7 +76,6 @@ typedef struct {
     uint32_t uid16_gid16;
 
     uint64_t xattr_ptr;
-    uint64_t inode_crc;
 
 
     // THIS FIELD SHOULD STAY AT THE END
@@ -164,20 +163,19 @@ int main() {
     superblock.checksum = superblock_crc_finalize(&superblock);
 
     // inode init
-    time_t now = time(NULL);
     inode_t inode;
 
     // ADD LATER
-    if (type == 1) // file
-    {
-        inode.mode = 0100000;
-    }
-    else if (type == 0) //directory
-    {
-        inode.mode = 0040000;
-    }
+    // if (type == 1) // file
+    // {
+    //     inode.mode = 0100000;
+    // }
+    // else if (type == 0) //directory
+    // {
+    //     inode.mode = 0040000;
+    // }
 
-    inode.links = ;
+    // inode.links = ;
 
     inode.uid = 0;
     inode.gid = 0;
@@ -190,14 +188,15 @@ int main() {
     inode.proj_id = 2;
     inode.uid16_gid16 = 0;
     inode.xattr_ptr = 0;
-    inode.inode_crc = inode_crc_finalize(&inode);
+    inode_crc_finalize(&inode);
+
 
     // directory entry initialization
     dirent64_t dirent;
     dirent.inode_no = 1;
 
     // ADD LATER (type)
-    dirent.checksum = dirent_checksum_finalize(&dirent);
+    dirent_checksum_finalize(&dirent);
 
     return 0;
 }

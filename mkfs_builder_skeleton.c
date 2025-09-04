@@ -166,7 +166,7 @@ int main(int argc, char* argv[]) {
         int size_kib = atoi(argv[4]);
         int inodes = atoi(argv[6]);
 
-        if (size_kib > 4096 || size_kib < 180 && size_kib % 4 != 0) {
+        if (size_kib > 4096 || (size_kib < 180 && size_kib % 4 != 0)) {
             printf("Error: size must be between 180 and 4096 and size must be a multiple of 4\n");
             return 1;
         }

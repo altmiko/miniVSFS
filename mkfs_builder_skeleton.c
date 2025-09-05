@@ -166,14 +166,21 @@ int main(int argc, char* argv[]) {
         int size_kib = atoi(argv[4]);
         int inodes = atoi(argv[6]);
 
-        if (size_kib > 4096 || (size_kib < 180 && size_kib % 4 != 0)) {
-            printf("Error: size must be between 180 and 4096 and size must be a multiple of 4\n");
+        if (size_kib > 4096 || size_kib < 180) {
+            printf("Error: size must be between 180 and 4096\n");
             return 1;
         }
-        if (inodes > 512 || inodes < 128) {
+        else if (inodes > 512 || inodes < 128) {
             printf("Error: inodes must be between 128 and 512\n");
             return 1;
         }
+        else if (size_kib % 4 != 0)
+        {
+            printf("Error: size must be a multiple of 4\n");
+            return 1;
+        }
+        
+
         else {
 
             FILE *fp = fopen(image_file, "wb");
@@ -236,6 +243,9 @@ int main(int argc, char* argv[]) {
             // ADD LATER (type)
             dirent_checksum_finalize(&dirent);
 
+            printf("Successfully created image file\n");
+            fclose(fp);
+            return 0;
         }
         
     }
